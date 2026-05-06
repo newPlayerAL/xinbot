@@ -226,6 +226,7 @@ public class PluginManagerCommandExecutor extends SubCommandExecutor {
             for (String pluginName : args) {
                 RegisteredPlugin plugin = findPlugin(pluginName);
                 if (plugin == null) continue;
+                File pluginFile = plugin.getFile();
                 try {
                     Bot.INSTANCE.getPluginManager().unloadPlugin(plugin);
                 } catch (Exception e) {
@@ -233,7 +234,11 @@ public class PluginManagerCommandExecutor extends SubCommandExecutor {
                     continue;
                 }
                 try {
-                    Bot.INSTANCE.getPluginManager().loadPlugin(plugin);
+                    if (pluginFile != null) {
+                        Bot.INSTANCE.getPluginManager().loadPlugin(pluginFile);
+                    } else {
+                        Bot.INSTANCE.getPluginManager().loadPlugin(plugin);
+                    }
                 } catch (Exception e) {
                     log.error(LangManager.get("xinbot.plugin.load.failed", plugin.getName()), e);
                 }
