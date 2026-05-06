@@ -111,7 +111,9 @@ public class Bot {
             proxyInfo = config.getConfigData().getProxy().getInfo().toMcProtocolLibProxyInfo();
         }
         log.info(LangManager.get("xinbot.bot.starting", protocol.getProfile().getName()));
-        connect();
+        
+        java.util.concurrent.CompletableFuture.runAsync(this::connect);
+        
         getInput();
     }
 
