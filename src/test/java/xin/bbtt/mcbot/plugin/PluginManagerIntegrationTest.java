@@ -51,7 +51,7 @@ public class PluginManagerIntegrationTest {
     }
 
     @Test
-    void testPluginLifecycle() {
+    void testPluginLifecycle() throws Exception {
         MockPlugin plugin = new MockPlugin();
         pluginManager.loadPlugin(plugin);
         
@@ -59,25 +59,21 @@ public class PluginManagerIntegrationTest {
         assertThat(pluginManager.getPlugin("MockPlugin")).isNotNull();
         
         // Simulate bot having a session to allow enabling
-        try {
-            ClientSession mockSession = mock(ClientSession.class);
-            Field sessionField = Bot.class.getDeclaredField("session");
-            sessionField.setAccessible(true);
-            sessionField.set(bot, mockSession);
-            
-            RegisteredPlugin rp = pluginManager.getPlugin("MockPlugin");
-            pluginManager.enablePlugin(rp);
-            
-            assertThat(plugin.enabled).isTrue();
-            assertThat(pluginManager.isPluginEnabled("MockPlugin")).isTrue();
-            
-            pluginManager.disablePlugin(rp);
-            assertThat(plugin.disabled).isTrue();
-            assertThat(pluginManager.isPluginEnabled("MockPlugin")).isFalse();
-            
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        ClientSession mockSession = mock(ClientSession.class);
+        Field sessionField = Bot.class.getDeclaredField("session");
+        sessionField.setAccessible(true);
+        sessionField.set(bot, mockSession);
+
+        RegisteredPlugin rp = pluginManager.getPlugin("MockPlugin");
+        pluginManager.enablePlugin(rp);
+
+        assertThat(plugin.enabled).isTrue();
+        assertThat(pluginManager.isPluginEnabled("MockPlugin")).isTrue();
+
+        pluginManager.disablePlugin(rp);
+        assertThat(plugin.disabled).isTrue();
+        assertThat(pluginManager.isPluginEnabled("MockPlugin")).isFalse();
+
     }
 
     public static class EventTestEvent extends xin.bbtt.mcbot.event.Event {
