@@ -1,6 +1,7 @@
 package xin.bbtt.mcbot.plugin;
 
 import org.geysermc.mcprotocollib.network.ClientSession;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -25,7 +26,6 @@ import static org.mockito.Mockito.when;
 public class PluginFileLifecycleTest {
 
     private PluginManager pluginManager;
-    private Bot bot;
     private File jarFile;
 
     @TempDir
@@ -36,7 +36,7 @@ public class PluginFileLifecycleTest {
         // Reset static counters in the dummy plugin
         DummyPlugin.reset();
         pluginManager = new PluginManager();
-        bot = Bot.INSTANCE;
+        Bot bot = Bot.INSTANCE;
 
         // Mock a connected session to allow automatic enabling upon loading
         ClientSession mockSession = mock(ClientSession.class);
@@ -72,7 +72,9 @@ public class PluginFileLifecycleTest {
             try (InputStream is = DummyPlugin.class.getClassLoader().getResourceAsStream(className)) {
                 byte[] buffer = new byte[1024];
                 int len;
-                while ((len = is.read(buffer)) > 0) {
+                while (true) {
+                    Assertions.assertNotNull(is);
+                    if (!((len = is.read(buffer)) > 0)) break;
                     jos.write(buffer, 0, len);
                 }
             }
