@@ -104,9 +104,9 @@ public class PluginManagerCommandExecutor extends SubCommandExecutor {
         }
 
         private void printTree(String pluginName, java.util.Map<String, java.util.List<String>> dependents, String prefix, boolean isTail, java.util.Set<String> visited) {
-            log.info(prefix + (isTail ? "└── " : "├── ") + pluginName);
+            log.info("{}{}{}", prefix, isTail ? "└── " : "├── ", pluginName);
             if (visited.contains(pluginName)) {
-                log.info(prefix + (isTail ? "    " : "│   ") + "└── [Circular Reference]");
+                log.info("{}{}└── [Circular Reference]", prefix, isTail ? "    " : "│   ");
                 return;
             }
             visited.add(pluginName);
@@ -226,6 +226,11 @@ public class PluginManagerCommandExecutor extends SubCommandExecutor {
             for (String pluginName : args) {
                 RegisteredPlugin plugin = findPlugin(pluginName);
                 if (plugin == null) continue;
+                File pluginFile = plugin.getFile();
+                if (pluginFile == null || !pluginFile.exists() || !pluginFile.isFile()) {
+                    log.error(LangManager.get("xinbot.plugin.file.not.found"));
+                    continue;
+                }
                 try {
                     Bot.INSTANCE.getPluginManager().unloadPlugin(plugin);
                 } catch (Exception e) {
@@ -233,7 +238,7 @@ public class PluginManagerCommandExecutor extends SubCommandExecutor {
                     continue;
                 }
                 try {
-                    Bot.INSTANCE.getPluginManager().loadPlugin(plugin);
+                    Bot.INSTANCE.getPluginManager().loadPlugin(pluginFile);
                 } catch (Exception e) {
                     log.error(LangManager.get("xinbot.plugin.load.failed", plugin.getName()), e);
                 }

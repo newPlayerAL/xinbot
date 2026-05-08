@@ -226,12 +226,14 @@ public class CommandManager {
             args = Arrays.copyOfRange(args, 0, args.length - 1);
         }
 
-        try {
-            registeredCommand.callCommand(label, args);
-        }
-        catch (Exception e) {
-            log.error(commandErrorMarker, xin.bbtt.mcbot.LangManager.get("xinbot.command.execute.error", command), e);
-        }
+        final String[] finalArgs = args;
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                registeredCommand.callCommand(label, finalArgs);
+            } catch (Exception e) {
+                log.error(commandErrorMarker, xin.bbtt.mcbot.LangManager.get("xinbot.command.execute.error", command), e);
+            }
+        });
     }
 
     public List<String> getCommandNames(String prefix) {

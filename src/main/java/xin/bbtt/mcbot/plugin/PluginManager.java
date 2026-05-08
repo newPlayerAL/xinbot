@@ -334,6 +334,9 @@ public class PluginManager {
             log.error(LangManager.get("xinbot.metaplugin.error.enable_runtime"));
             return;
         }
+        if (enabledPlugins.containsKey(rp.getName())) {
+            return;
+        }
         try {
             try (InputStream is = rp.getPlugin().getClass().getClassLoader().getResourceAsStream("commands.yml")) {
                 if (is != null) {
