@@ -23,7 +23,6 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-          # 让 setup-java 生成 settings.xml，并使用 GitHub Packages 的凭据
           server-id: github
           server-username: GITHUB_ACTOR
           server-password: GITHUB_TOKEN
