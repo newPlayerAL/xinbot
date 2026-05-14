@@ -132,6 +132,8 @@ xinbot.command.say.description=A command to say a chat.
 xinbot.command.say.usage=say <message>
 xinbot.command.stop.description=stops the bot
 xinbot.command.stop.usage=stop
+xinbot.command.version.description=A command to show the version of Xinbot or a plugin.
+xinbot.command.version.usage=version / version <plugin name>
 xinbot.bot.disconnect.command=Disconnected by command
 
 # Log levels

@@ -40,3 +40,7 @@ license:
   description: "xinbot.command.license.description"
   usage: "xinbot.command.license.usage"
   executor: "xin.bbtt.mcbot.commandExecutors.LicenseCommandExecutor"
+version:
+  description: "xinbot.command.version.description"
+  usage: "xinbot.command.version.usage"
+  executor: "xin.bbtt.mcbot.commandExecutors.VersionCommandExecutor"

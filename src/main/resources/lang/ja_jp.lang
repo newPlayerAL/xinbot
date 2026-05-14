@@ -78,6 +78,8 @@ xinbot.command.say.description=チャットを送信するコマンド。
 xinbot.command.say.usage=say <message>
 xinbot.command.stop.description=ボットを停止します
 xinbot.command.stop.usage=stop
+xinbot.command.version.description=Xinbotまたはプラグインのバージョンを表示するコマンド。
+xinbot.command.version.usage=version / version <プラグイン名>
 xinbot.bot.disconnect.command=コマンドによって切断されました
 
 # Log levels

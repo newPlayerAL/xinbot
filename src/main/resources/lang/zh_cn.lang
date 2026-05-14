@@ -131,6 +131,8 @@ xinbot.command.say.description=发送聊天消息的命令。
 xinbot.command.say.usage=say <message>
 xinbot.command.stop.description=停止机器人
 xinbot.command.stop.usage=stop
+xinbot.command.version.description=查看 Xinbot 或插件版本的命令。
+xinbot.command.version.usage=version / version <插件名称>
 xinbot.bot.disconnect.command=由命令断开连接
 
 # Log levels
