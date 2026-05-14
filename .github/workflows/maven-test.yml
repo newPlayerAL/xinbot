@@ -5,9 +5,11 @@ name: Java CI with Parallel Testing
 
 on:
   push:
-    branches: [ "master", "main" ]
+    branches:
+        - master
   pull_request:
-    branches: [ "master", "main" ]
+    branches:
+        - master
 
 jobs:
   test:
