@@ -43,4 +43,5 @@ license:
 version:
   description: "xinbot.command.version.description"
   usage: "xinbot.command.version.usage"
+  aliases: ["ver"]
   executor: "xin.bbtt.mcbot.commandExecutors.VersionCommandExecutor"
