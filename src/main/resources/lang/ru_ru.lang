@@ -78,6 +78,8 @@ xinbot.command.say.description=Команда для отправки сообщ
 xinbot.command.say.usage=say <message>
 xinbot.command.stop.description=останавливает бота
 xinbot.command.stop.usage=stop
+xinbot.command.version.description=Команда для показа версии Xinbot или плагина.
+xinbot.command.version.usage=version / version <имя плагина>
 xinbot.bot.disconnect.command=Отключено командой
 
 # Log levels

@@ -25,8 +25,8 @@ import xin.bbtt.mcbot.command.CommandExecutor;
 
 import java.util.Arrays;
 
-public class LicenseExecutor extends CommandExecutor {
-    private static final Logger log = LoggerFactory.getLogger(LicenseExecutor.class.getSimpleName());
+public class LicenseCommandExecutor extends CommandExecutor {
+    private static final Logger log = LoggerFactory.getLogger(LicenseCommandExecutor.class.getSimpleName());
     @Override
     public void onCommand(Command command, String label, String[] args) {
         Arrays.stream(Xinbot.license.split("\n")).forEach(log::info);

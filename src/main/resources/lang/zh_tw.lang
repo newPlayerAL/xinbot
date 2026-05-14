@@ -74,6 +74,8 @@ xinbot.command.say.description=發送聊天訊息的命令。
 xinbot.command.say.usage=say <message>
 xinbot.command.stop.description=停止機器人
 xinbot.command.stop.usage=stop
+xinbot.command.version.description=查看 Xinbot 或外掛程式版本的命令。
+xinbot.command.version.usage=version / version <外掛程式名稱>
 xinbot.bot.disconnect.command=由命令斷開連接
 
 # Log levels

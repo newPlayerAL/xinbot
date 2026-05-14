@@ -78,6 +78,8 @@ xinbot.command.say.description=Ein Befehl zum Senden einer Chatnachricht.
 xinbot.command.say.usage=say <message>
 xinbot.command.stop.description=stoppt den Bot
 xinbot.command.stop.usage=stop
+xinbot.command.version.description=Ein Befehl zur Anzeige der Version von Xinbot oder einem Plugin.
+xinbot.command.version.usage=version / version <plugin name>
 xinbot.bot.disconnect.command=Durch Befehl getrennt
 
 # Log levels
