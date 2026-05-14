@@ -179,5 +179,6 @@ public class Xinbot {
         // After the bot stopped
         log.info(LangManager.get("xinbot.bot.stopped"));
         log.info(LangManager.get("xinbot.bot.bye"));
+        System.exit(0);
     }
 }
