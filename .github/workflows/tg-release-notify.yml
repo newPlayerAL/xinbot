@@ -1,0 +1,44 @@
+name: Telegram Release Notification
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram Notification
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          TG_MESSAGE_THREAD_ID: ${{ secrets.TG_MESSAGE_THREAD_ID }}
+          RELEASE_NAME: ${{ github.event.release.name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          if [ -z "$TG_BOT_TOKEN" ] || [ -z "$TG_CHAT_ID" ]; then
+            echo "Telegram bot token or chat ID is missing. Skipping notification."
+            exit 0
+          fi
+          
+          # Use jq to safely construct the JSON payload
+          JSON_PAYLOAD=$(jq -n \
+            --arg chat_id "$TG_CHAT_ID" \
+            --arg thread_id "$TG_MESSAGE_THREAD_ID" \
+            --arg text "🚀 <b>New Release Published!</b>
+          
+          📦 <b>Version:</b> $RELEASE_TAG
+          📝 <b>Name:</b> $RELEASE_NAME
+          
+          🔗 <a href=\"$RELEASE_URL\">View Release on GitHub</a>" \
+            '{
+              chat_id: $chat_id,
+              parse_mode: "HTML",
+              text: $text
+            } + (if $thread_id != "" then {message_thread_id: ($thread_id | tonumber)} else {} end)')
+
+          # Send the message via Telegram Bot API
+          curl -s -X POST "https://api.telegram.org/bot$TG_BOT_TOKEN/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "$JSON_PAYLOAD"

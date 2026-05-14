@@ -76,3 +76,10 @@ jobs:
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           git push origin --delete "$HEAD_REF" || echo "Branch already deleted"
+
+      - name: Trigger JitPack Build
+        if: steps.version.outputs.changed == 'true'
+        run: |
+          VERSION="${{ steps.version.outputs.new_version }}"
+          echo "Triggering JitPack build for version $VERSION..."
+          curl -s -o /dev/null -w "%{http_code}" "https://jitpack.io/com/github/${{ github.repository }}/$VERSION/build.log" || true
