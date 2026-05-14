@@ -21,7 +21,7 @@ disconnect:
   description: "xinbot.command.disconnect.description"
   usage: "xinbot.command.disconnect.usage"
   aliases: ["dc"]
-  executor: "xin.bbtt.mcbot.commandExecutors.DisconnectExecutor"
+  executor: "xin.bbtt.mcbot.commandExecutors.DisconnectCommandExecutor"
 list:
   description: "xinbot.command.list.description"
   usage: "xinbot.command.list.usage"
@@ -39,4 +39,4 @@ plugins:
 license:
   description: "xinbot.command.license.description"
   usage: "xinbot.command.license.usage"
-  executor: "xin.bbtt.mcbot.commandExecutors.LicenseExecutor"
+  executor: "xin.bbtt.mcbot.commandExecutors.LicenseCommandExecutor"
