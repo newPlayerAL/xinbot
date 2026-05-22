@@ -206,6 +206,10 @@ public class Utils {
         );
     }
 
+    public static UUID getOfflineUUID(String playerName) {
+        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    }
+
     public static HashedStack itemStackToHashedStack(ItemStack itemStack) {
         if (itemStack == null || itemStack.getId() == 0) {
             return new HashedStack(0, 0, Map.of(), Set.of());

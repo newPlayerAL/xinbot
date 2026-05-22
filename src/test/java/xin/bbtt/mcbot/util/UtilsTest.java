@@ -36,4 +36,11 @@ public class UtilsTest {
         String expected5 = "\u001B[97m§zUnknown\u001B[0m";
         assertThat(Utils.parseColors(input5)).isEqualTo(expected5);
     }
+
+    @Test
+    void testGetOfflineUUID() {
+        String playerName = "Notch";
+        String expectedUUID = "b50ad385-829d-3141-a216-7e7d7539ba7f";
+        assertThat(Utils.getOfflineUUID(playerName).toString()).isEqualTo(expectedUUID);
+    }
 }
