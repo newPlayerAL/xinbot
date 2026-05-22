@@ -122,3 +122,19 @@ xinbot.command.builtin.load_failed=Не удалось загрузить вст
 xinbot.config.file.not_found=Файл конфигурации не найден: %s
 xinbot.auth.no_session=Сессия не найдена
 
+xinbot.command.status.description=Показывает текущий статус бота
+xinbot.command.status.usage=status
+xinbot.command.status.header=--- Статус бота ---
+xinbot.command.status.uptime=Время работы: %s
+xinbot.command.status.connection=Подключение: %s
+xinbot.command.status.memory=Память: %s
+xinbot.command.status.players=Игроки в сети: %s
+xinbot.command.status.connected=Подключено
+xinbot.command.status.disconnected=Отключено
+
+xinbot.command.reload.description=Перезагружает конфигурацию бота.
+xinbot.command.reload.usage=reload / reload <filename.conf>
+xinbot.command.reload.invalid_extension=Файл конфигурации должен заканчиваться на .conf
+xinbot.command.reload.success=Конфигурация успешно перезагружена из: %s
+xinbot.command.reload.failed=Не удалось перезагрузить конфигурацию из: %s
+xinbot.command.reload.disconnect=Перезагрузка конфигурации...

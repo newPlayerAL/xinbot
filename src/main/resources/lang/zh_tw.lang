@@ -116,3 +116,20 @@ xinbot.command.builtin.load_failed=載入內建指令失敗
 xinbot.config.file.not_found=未找到設定檔案：%s
 xinbot.auth.no_session=未找到工作階段
 
+xinbot.command.status.description=顯示機器人的目前運行狀態
+xinbot.command.status.usage=status
+xinbot.command.status.header=--- 機器人運行狀態 ---
+xinbot.command.status.uptime=運行時長: %s
+xinbot.command.status.connection=連接狀態: %s
+xinbot.command.status.memory=記憶體佔用: %s
+xinbot.command.status.players=線上玩家: %s
+xinbot.command.status.connected=已連接
+xinbot.command.status.disconnected=未連接
+
+xinbot.command.reload.description=重新載入機器人設定檔案。
+xinbot.command.reload.usage=reload / reload <filename.conf>
+xinbot.command.reload.invalid_extension=設定檔案必須以 .conf 結尾
+xinbot.command.reload.success=已成功從 %s 重新載入設定
+xinbot.command.reload.failed=從 %s 重新載入設定失敗
+xinbot.command.reload.disconnect=正在重載設定...
+

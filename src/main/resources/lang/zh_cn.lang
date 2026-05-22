@@ -171,3 +171,20 @@ xinbot.command.builtin.load_failed=加载内置命令失败
 xinbot.config.file.not_found=未找到配置文件：%s
 xinbot.auth.no_session=未找到会话
 
+xinbot.command.status.description=显示机器人的当前运行状态
+xinbot.command.status.usage=status
+xinbot.command.status.header=--- 机器人运行状态 ---
+xinbot.command.status.uptime=运行时长: %s
+xinbot.command.status.connection=连接状态: %s
+xinbot.command.status.memory=内存占用: %s
+xinbot.command.status.players=在线玩家: %s
+xinbot.command.status.connected=已连接
+xinbot.command.status.disconnected=未连接
+
+xinbot.command.reload.description=重新加载机器人配置文件。
+xinbot.command.reload.usage=reload / reload <filename.conf>
+xinbot.command.reload.invalid_extension=配置文件必须以 .conf 结尾
+xinbot.command.reload.success=已成功从 %s 重新加载配置
+xinbot.command.reload.failed=从 %s 重新加载配置失败
+xinbot.command.reload.disconnect=正在重载配置...
+

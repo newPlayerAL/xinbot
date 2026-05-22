@@ -122,3 +122,19 @@ xinbot.command.builtin.load_failed=Échec du chargement des commandes intégrée
 xinbot.config.file.not_found=Fichier de configuration non trouvé : %s
 xinbot.auth.no_session=Aucune session trouvée
 
+xinbot.command.status.description=Affiche l'état actuel du bot
+xinbot.command.status.usage=status
+xinbot.command.status.header=--- Statut du Bot ---
+xinbot.command.status.uptime=Temps de fonctionnement: %s
+xinbot.command.status.connection=Connexion: %s
+xinbot.command.status.memory=Mémoire: %s
+xinbot.command.status.players=Joueurs en ligne: %s
+xinbot.command.status.connected=Connecté
+xinbot.command.status.disconnected=Déconnecté
+
+xinbot.command.reload.description=Recharge la configuration du bot.
+xinbot.command.reload.usage=reload / reload <filename.conf>
+xinbot.command.reload.invalid_extension=Le fichier de configuration doit se terminer par .conf
+xinbot.command.reload.success=Configuration rechargée avec succès depuis: %s
+xinbot.command.reload.failed=Échec du rechargement de la configuration depuis: %s
+xinbot.command.reload.disconnect=Rechargement de la configuration...
