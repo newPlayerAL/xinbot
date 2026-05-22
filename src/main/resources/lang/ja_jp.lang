@@ -122,3 +122,19 @@ xinbot.command.builtin.load_failed=組み込みコマンドの読み込みに失
 xinbot.config.file.not_found=設定ファイルが見つかりません: %s
 xinbot.auth.no_session=セッションが見つかりません
 
+xinbot.command.status.description=ボットの現在のステータスを表示します
+xinbot.command.status.usage=status
+xinbot.command.status.header=--- ボットステータス ---
+xinbot.command.status.uptime=稼働時間: %s
+xinbot.command.status.connection=接続: %s
+xinbot.command.status.memory=メモリ: %s
+xinbot.command.status.players=オンラインプレイヤー: %s
+xinbot.command.status.connected=接続済み
+xinbot.command.status.disconnected=切断
+
+xinbot.command.reload.description=ボットの設定を再読み込みします。
+xinbot.command.reload.usage=reload / reload <filename.conf>
+xinbot.command.reload.invalid_extension=設定ファイルは .conf で終わる必要があります
+xinbot.command.reload.success=%s から設定を正常に再読み込みしました
+xinbot.command.reload.failed=%s からの設定の再読み込みに失敗しました
+xinbot.command.reload.disconnect=設定を再読み込みしています...

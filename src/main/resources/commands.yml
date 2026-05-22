@@ -45,3 +45,12 @@ version:
   usage: "xinbot.command.version.usage"
   aliases: ["ver"]
   executor: "xin.bbtt.mcbot.commandExecutors.VersionCommandExecutor"
+status:
+  description: "xinbot.command.status.description"
+  usage: "xinbot.command.status.usage"
+  executor: "xin.bbtt.mcbot.commandExecutors.StatusCommandExecutor"
+reload:
+  description: "xinbot.command.reload.description"
+  usage: "xinbot.command.reload.usage"
+  aliases: ["rl"]
+  executor: "xin.bbtt.mcbot.commandExecutors.ReloadCommandExecutor"

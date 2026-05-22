@@ -173,3 +173,20 @@ xinbot.command.builtin.load_failed=Failed to load built-in commands
 xinbot.config.file.not_found=Config file not found: %s
 xinbot.auth.no_session=No session found
 
+xinbot.command.status.description=Shows the current status of the bot
+xinbot.command.status.usage=status
+xinbot.command.status.header=--- Bot Status ---
+xinbot.command.status.uptime=Uptime: %s
+xinbot.command.status.connection=Connection: %s
+xinbot.command.status.memory=Memory: %s
+xinbot.command.status.players=Online Players: %s
+xinbot.command.status.connected=Connected
+xinbot.command.status.disconnected=Disconnected
+
+xinbot.command.reload.description=Reloads the bot configuration.
+xinbot.command.reload.usage=reload / reload <filename.conf>
+xinbot.command.reload.invalid_extension=Config file must end with .conf
+xinbot.command.reload.success=Successfully reloaded configuration from: %s
+xinbot.command.reload.failed=Failed to reload configuration from: %s
+xinbot.command.reload.disconnect=Reloading config...
+

@@ -225,6 +225,24 @@ public class Bot {
         session.disconnect(reason);
     }
 
+    public void reloadConfig(String configPath) throws Exception {
+        config.loadFromFile(configPath);
+        Xinbot.configPath = configPath;
+        
+        config.getConfigData().setAccount(AccountLoader.init(config.getConfigData().getAccount()));
+        config.saveToFile();
+
+        if (config.getConfigData().getProxy().isEnable()) {
+            proxyInfo = config.getConfigData().getProxy().getInfo().toMcProtocolLibProxyInfo();
+        } else {
+            proxyInfo = null;
+        }
+
+        if (session != null && session.isConnected()) {
+            disconnect(LangManager.get("xinbot.command.reload.disconnect", "Reloading config..."));
+        }
+    }
+
     public void addPacketListener(SessionListener listener, Plugin plugin){
         getPluginManager().addListener(listener, plugin);
     }
