@@ -41,7 +41,8 @@ public class AccountLoader {
     private static final Gson gson = new Gson();
     public static BotConfigData.Account init(@NotNull BotConfigData.Account account) throws Exception {
         if (!account.isOnlineMode()) {
-            protocol = new MinecraftProtocol(account.getName());
+            GameProfile profile = new GameProfile(xin.bbtt.mcbot.Utils.getOfflineUUID(account.getName()), account.getName());
+            protocol = new MinecraftProtocol(profile, null);
             return account;
         }
         if (account.getFullSession() == null || account.getFullSession().isEmpty()) {
