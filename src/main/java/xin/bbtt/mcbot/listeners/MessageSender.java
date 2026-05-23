@@ -24,7 +24,6 @@ import org.geysermc.mcprotocollib.protocol.data.ProtocolState;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.ServerboundChatCommandPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.ServerboundChatPacket;
 import xin.bbtt.mcbot.Bot;
-import xin.bbtt.mcbot.Server;
 import xin.bbtt.mcbot.events.SendChatMessageEvent;
 import xin.bbtt.mcbot.events.SendCommandEvent;
 
@@ -36,7 +35,7 @@ public class MessageSender extends SessionAdapter {
 
     @Override
     public void packetReceived(Session session, Packet packet) {
-        if (System.currentTimeMillis() - last_send_time < 3000 || Bot.INSTANCE.getServer() != Server.Game) return;
+        if (System.currentTimeMillis() - last_send_time < 3000) return;
         if (Bot.INSTANCE.getProtocol().getOutboundState() != ProtocolState.GAME) return;
         if (Bot.INSTANCE.getProtocol().getInboundState() != ProtocolState.GAME) return;
         if (Bot.INSTANCE.getToBeSentMessages().isEmpty()) return;
