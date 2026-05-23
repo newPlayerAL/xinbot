@@ -1,0 +1,52 @@
+name: JitPack Build Trigger
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  jitpack-trigger:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Trigger and Poll JitPack Build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          echo "Triggering JitPack build for version $TAG..."
+          # Initial trigger
+          curl -sL "https://jitpack.io/com/github/${{ github.repository }}/$TAG/build.log" > /dev/null
+          
+          echo "Polling JitPack build status..."
+          MAX_RETRIES=20
+          RETRY_INTERVAL=30
+          COUNT=0
+          
+          while [ $COUNT -lt $MAX_RETRIES ]; do
+            STATUS=$(curl -s "https://jitpack.io/api/builds/com.github.${{ github.repository }}/$TAG" | jq -r '.status')
+            echo "Attempt $((COUNT+1))/$MAX_RETRIES: Status is '$STATUS'"
+            
+            if [ "$STATUS" = "ok" ]; then
+              echo "JitPack build completed successfully!"
+              exit 0
+            elif [ "$STATUS" = "error" ]; then
+              echo "JitPack build reported an error."
+              break
+            fi
+            
+            # If status is "building" or something else, keep waiting
+            COUNT=$((COUNT+1))
+            [ $COUNT -lt $MAX_RETRIES ] && sleep $RETRY_INTERVAL
+          done
+          
+          echo "JitPack build failed or timed out. Creating an issue..."
+          gh issue create \
+            --title "JitPack build failed for release $TAG" \
+            --body "The JitPack build for version \`$TAG\` failed or timed out after polling.
+          
+          Final Status: $STATUS
+          View the build log here: https://jitpack.io/com/github/${{ github.repository }}/$TAG/build.log" \
+            --repo "${{ github.repository }}"
+          exit 1
