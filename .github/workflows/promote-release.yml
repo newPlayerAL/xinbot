@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -79,7 +80,24 @@ jobs:
 
       - name: Trigger JitPack Build
         if: steps.version.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION="${{ steps.version.outputs.new_version }}"
           echo "Triggering JitPack build for version $VERSION..."
-          curl -s -o /dev/null -w "%{http_code}" "https://jitpack.io/com/github/${{ github.repository }}/$VERSION/build.log" || true
+          curl -sL "https://jitpack.io/com/github/${{ github.repository }}/$VERSION/build.log" > /dev/null
+          
+          echo "Checking JitPack build status..."
+          STATUS=$(curl -s "https://jitpack.io/api/builds/com.github.${{ github.repository }}/$VERSION" | jq -r '.status')
+          echo "Status: $STATUS"
+          
+          if [ "$STATUS" != "ok" ]; then
+            echo "JitPack build failed! Creating an issue..."
+            gh issue create \
+              --title "JitPack build failed for release $VERSION" \
+              --body "The JitPack build for version \`$VERSION\` failed.
+          
+          View the build log here: https://jitpack.io/com/github/${{ github.repository }}/$VERSION/build.log" \
+              --repo "${{ github.repository }}"
+            exit 1
+          fi
