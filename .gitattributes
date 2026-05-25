@@ -1,2 +1,7 @@
 lang.json eol=crlf filter=lfs diff=lfs merge=lfs -text
 * text eol=crlf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
