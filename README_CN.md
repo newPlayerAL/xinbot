@@ -1,5 +1,5 @@
 # Xinbot
-![logo](logo.jpeg)
+![logo](xinbot-logo.png)
 
 ## 📖 官方文档: [xinbot.shouldbe.top](https://xinbot.shouldbe.top/)
 
