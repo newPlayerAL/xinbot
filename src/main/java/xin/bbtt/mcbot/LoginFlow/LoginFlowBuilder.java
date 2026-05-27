@@ -18,6 +18,7 @@
 package xin.bbtt.mcbot.LoginFlow;
 
 import org.geysermc.mcprotocollib.network.packet.Packet;
+import xin.bbtt.mcbot.event.EventManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +33,11 @@ import java.util.function.Function;
 public class LoginFlowBuilder {
     final List<LoginFlowStep<?, ?>> steps = new ArrayList<>();
     long cooldownMs = 2000;
+    long stepTimeoutMs = 0;
     final Consumer<String> commandSender;
     Function<String, String> templateExpander = null;
     Consumer<LoginFlow.LoginFlowContext> stateChangeListener = null;
+    EventManager eventManager = null;
 
     LoginFlowBuilder(Consumer<String> commandSender) {
         this.commandSender = commandSender;
@@ -61,6 +64,16 @@ public class LoginFlowBuilder {
     }
 
     /**
+     * Sets the timeout for each step in milliseconds.
+     * If a step doesn't complete within this time, the flow transitions to {@link LoginFlow.FlowState#FAILED}.
+     * Default: 0 (no timeout).
+     */
+    public LoginFlowBuilder stepTimeout(long ms) {
+        this.stepTimeoutMs = ms;
+        return this;
+    }
+
+    /**
      * Sets a template expander for command templates.
      * For example, expanding {@code {password}} to the actual password.
      */
@@ -74,6 +87,14 @@ public class LoginFlowBuilder {
      */
     public LoginFlowBuilder onStateChange(Consumer<LoginFlow.LoginFlowContext> listener) {
         this.stateChangeListener = listener;
+        return this;
+    }
+
+    /**
+     * Sets an EventManager to fire {@link xin.bbtt.mcbot.events.LoginFlowEvent} on state transitions.
+     */
+    public LoginFlowBuilder eventManager(EventManager eventManager) {
+        this.eventManager = eventManager;
         return this;
     }
 

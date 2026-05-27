@@ -23,6 +23,8 @@ import org.geysermc.mcprotocollib.network.event.session.SessionAdapter;
 import org.geysermc.mcprotocollib.network.packet.Packet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xin.bbtt.mcbot.event.EventManager;
+import xin.bbtt.mcbot.events.LoginFlowEvent;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +49,7 @@ import java.util.function.Function;
  *     .cooldown(2000)
  *     .build();
  *
- * Bot.INSTANCE.addPacketListener(flow.asListener(), this);
+ * Bot.INSTANCE.addPacketListener(flow, this);
  * }</pre>
  *
  * <h3>Key features</h3>
@@ -55,7 +57,8 @@ import java.util.function.Function;
  *   <li>Declarative step chain — each step declares "what to match" and "what to do"</li>
  *   <li>Built-in cooldown — prevents duplicate commands within a configurable window</li>
  *   <li>Template expansion — command templates with {@code {key}} placeholders</li>
- *   <li>Fires {@link xin.bbtt.mcbot.events.LoginFlowEvent} on state transitions (if registered)</li>
+ *   <li>Step timeout — marks flow as FAILED if a step takes too long</li>
+ *   <li>Fires {@link LoginFlowEvent} on state transitions (if EventManager is provided)</li>
  *   <li>Decoupled from {@code Bot.INSTANCE} — accepts a command sender callback</li>
  * </ul>
  */
@@ -65,21 +68,26 @@ public class LoginFlow extends SessionAdapter {
 
     private final List<LoginFlowStep<?, ?>> steps;
     private final long cooldownMs;
+    private final long stepTimeoutMs;
     private final Consumer<String> commandSender;
     private final Function<String, String> templateExpander;
     private final Consumer<LoginFlowContext> stateChangeListener;
+    private final EventManager eventManager;
 
     private int currentStepIndex = 0;
     private long lastCommandTime = 0;
+    private volatile long stepStartTime = 0;
     @Getter
-    private FlowState state = FlowState.WAITING;
+    private volatile FlowState state = FlowState.WAITING;
 
     LoginFlow(LoginFlowBuilder builder) {
         this.steps = Collections.unmodifiableList(builder.steps);
         this.cooldownMs = builder.cooldownMs;
+        this.stepTimeoutMs = builder.stepTimeoutMs;
         this.commandSender = builder.commandSender;
         this.templateExpander = builder.templateExpander;
         this.stateChangeListener = builder.stateChangeListener;
+        this.eventManager = builder.eventManager;
     }
 
     /**
@@ -93,8 +101,15 @@ public class LoginFlow extends SessionAdapter {
 
     @Override
     public void packetReceived(Session session, Packet packet) {
-        if (state == FlowState.COMPLETED) return;
+        if (state == FlowState.COMPLETED || state == FlowState.FAILED) return;
         if (currentStepIndex >= steps.size()) return;
+
+        if (stepStartTime == 0) {
+            stepStartTime = System.currentTimeMillis();
+        }
+
+        checkStepTimeout();
+        if (state == FlowState.FAILED) return;
 
         long now = System.currentTimeMillis();
         LoginFlowStep<?, ?> currentStep = steps.get(currentStepIndex);
@@ -121,9 +136,22 @@ public class LoginFlow extends SessionAdapter {
         }
     }
 
+    private void checkStepTimeout() {
+        if (stepTimeoutMs <= 0) return;
+        if (stepStartTime <= 0) return;
+        if (System.currentTimeMillis() - stepStartTime > stepTimeoutMs) {
+            log.warn("LoginFlow step {} timed out after {}ms, marking as FAILED",
+                    currentStepIndex, stepTimeoutMs);
+            state = FlowState.FAILED;
+            fireStateChange();
+        }
+    }
+
     private void sendCommandIfReady(LoginFlowStep<?, ?> step, long now) {
         if (step.commandTemplate != null && now - lastCommandTime >= cooldownMs) {
-            commandSender.accept(expandTemplate(step.commandTemplate));
+            String command = expandTemplate(step.commandTemplate);
+            log.debug("LoginFlow step {}: sending '{}'", currentStepIndex, command);
+            commandSender.accept(command);
             lastCommandTime = now;
         }
     }
@@ -137,12 +165,17 @@ public class LoginFlow extends SessionAdapter {
 
         currentStepIndex++;
         state = currentStepIndex >= steps.size() ? FlowState.COMPLETED : FlowState.WAITING;
+        stepStartTime = state == FlowState.WAITING ? System.currentTimeMillis() : 0;
+        log.debug("LoginFlow advanced to step {}/{} ({})", currentStepIndex, steps.size(), state);
         fireStateChange();
     }
 
     private void fireStateChange() {
         if (stateChangeListener != null) {
             stateChangeListener.accept(new LoginFlowContext(currentStepIndex, state));
+        }
+        if (eventManager != null) {
+            eventManager.callEvent(new LoginFlowEvent(currentStepIndex, state));
         }
     }
 
@@ -156,7 +189,10 @@ public class LoginFlow extends SessionAdapter {
     public void reset() {
         currentStepIndex = 0;
         lastCommandTime = 0;
+        stepStartTime = 0;
         state = FlowState.WAITING;
+        log.debug("LoginFlow reset");
+        fireStateChange();
     }
 
     /**
@@ -173,17 +209,10 @@ public class LoginFlow extends SessionAdapter {
         return steps.size();
     }
 
-    /**
-     * Returns this instance as a {@link SessionAdapter} for use with
-     * {@code Bot.INSTANCE.addPacketListener()}.
-     */
-    public SessionAdapter asListener() {
-        return this;
-    }
-
     public enum FlowState {
         WAITING,
-        COMPLETED
+        COMPLETED,
+        FAILED
     }
 
     /**

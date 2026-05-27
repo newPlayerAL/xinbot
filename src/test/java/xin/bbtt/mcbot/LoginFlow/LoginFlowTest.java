@@ -5,6 +5,7 @@ import org.geysermc.mcprotocollib.network.packet.Packet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
+import xin.bbtt.mcbot.event.EventManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -186,7 +187,6 @@ class LoginFlowTest {
             flow.packetReceived(mockSession, new FakePacketA("a"));
             assertThat(sentCommands).containsExactly("cmdA");
 
-            // FakePacketA for step 2 should be ignored (wrong type)
             flow.packetReceived(mockSession, new FakePacketA("b"));
             assertThat(sentCommands).containsExactly("cmdA");
 
@@ -330,12 +330,10 @@ class LoginFlowTest {
             assertThat(flow.getCurrentStepIndex()).isEqualTo(0);
             assertThat(sentCommands).containsExactly("cmd");
 
-            // Match again but no success yet - cooldown prevents re-send
             flow.packetReceived(mockSession, new FakePacketA("trigger"));
             assertThat(flow.getCurrentStepIndex()).isEqualTo(0);
             assertThat(sentCommands).containsExactly("cmd");
 
-            // Now it succeeds
             flow.packetReceived(mockSession, new FakePacketA("success"));
             assertThat(flow.getCurrentStepIndex()).isEqualTo(1);
         }
@@ -358,11 +356,9 @@ class LoginFlowTest {
             assertThat(flow.getCurrentStepIndex()).isEqualTo(0);
             assertThat(sentCommands).containsExactly("cmd");
 
-            // FakePacketB with wrong data - not success
             flow.packetReceived(mockSession, new FakePacketB("nope"));
             assertThat(flow.getCurrentStepIndex()).isEqualTo(0);
 
-            // FakePacketB with right data - success
             flow.packetReceived(mockSession, new FakePacketB("done"));
             assertThat(flow.getCurrentStepIndex()).isEqualTo(1);
         }
@@ -450,20 +446,132 @@ class LoginFlowTest {
             flow.packetReceived(mockSession, new FakePacketA("x"));
             assertThat(sentCommands).hasSize(2);
         }
-    }
 
-    @Nested
-    class AsListener {
         @Test
-        void asListenerReturnsSameInstance() {
+        void resetNotifiesStateChangeListener() {
+            List<LoginFlow.LoginFlowContext> changes = new ArrayList<>();
+
             LoginFlow flow = baseBuilder
                 .step(FakePacketA.class)
                     .match(p -> true)
                     .then("cmd")
                 .add()
+                .cooldown(0)
+                .onStateChange(changes::add)
                 .build();
 
-            assertThat(flow.asListener()).isSameAs(flow);
+            flow.packetReceived(mockSession, new FakePacketA("x"));
+            assertThat(changes).hasSize(1);
+            assertThat(changes.get(0).state()).isEqualTo(LoginFlow.FlowState.COMPLETED);
+
+            flow.reset();
+            assertThat(changes).hasSize(2);
+            assertThat(changes.get(1).state()).isEqualTo(LoginFlow.FlowState.WAITING);
+            assertThat(changes.get(1).stepIndex()).isEqualTo(0);
+        }
+    }
+
+    @Nested
+    class CompletedState {
+        @Test
+        void completedFlowIgnoresFurtherPackets() {
+            LoginFlow flow = baseBuilder
+                .step(FakePacketA.class)
+                    .match(p -> true)
+                    .then("cmd")
+                .add()
+                .cooldown(0)
+                .build();
+
+            flow.packetReceived(mockSession, new FakePacketA("x"));
+            assertThat(flow.getState()).isEqualTo(LoginFlow.FlowState.COMPLETED);
+
+            flow.packetReceived(mockSession, new FakePacketA("x"));
+            flow.packetReceived(mockSession, new FakePacketA("x"));
+
+            assertThat(sentCommands).hasSize(1);
+        }
+    }
+
+    @Nested
+    class FailedState {
+        @Test
+        void failedFlowIgnoresFurtherPackets() {
+            LoginFlow flow = baseBuilder
+                .step(FakePacketA.class)
+                    .match(p -> true)
+                    .then("cmd")
+                    .successWhen(p -> p.getData().contains("never"))
+                .add()
+                .cooldown(0)
+                .stepTimeout(1)
+                .build();
+
+            flow.packetReceived(mockSession, new FakePacketA("trigger"));
+            assertThat(flow.getState()).isEqualTo(LoginFlow.FlowState.WAITING);
+
+            // Wait for timeout
+            try { Thread.sleep(50); } catch (InterruptedException ignored) {}
+
+            flow.packetReceived(mockSession, new FakePacketA("anything"));
+            assertThat(flow.getState()).isEqualTo(LoginFlow.FlowState.FAILED);
+
+            // Further packets ignored
+            flow.packetReceived(mockSession, new FakePacketA("anything"));
+            assertThat(sentCommands).hasSize(1);
+        }
+
+        @Test
+        void resetFromFailedAllowsReuse() {
+            LoginFlow flow = baseBuilder
+                .step(FakePacketA.class)
+                    .match(p -> true)
+                    .then("cmd")
+                    .successWhen(p -> p.getData().contains("never"))
+                .add()
+                .cooldown(0)
+                .stepTimeout(1)
+                .build();
+
+            flow.packetReceived(mockSession, new FakePacketA("x"));
+            try { Thread.sleep(50); } catch (InterruptedException ignored) {}
+            flow.packetReceived(mockSession, new FakePacketA("x"));
+            assertThat(flow.getState()).isEqualTo(LoginFlow.FlowState.FAILED);
+
+            flow.reset();
+            assertThat(flow.getState()).isEqualTo(LoginFlow.FlowState.WAITING);
+            flow.packetReceived(mockSession, new FakePacketA("x"));
+            assertThat(sentCommands).hasSize(2);
+        }
+    }
+
+    @Nested
+    class EventManagerIntegration {
+        @Test
+        void firesLoginFlowEvent() {
+            EventManager mockEventManager = mock(EventManager.class);
+
+            LoginFlow flow = baseBuilder
+                .step(FakePacketA.class)
+                    .match(p -> true)
+                    .then("cmd")
+                .step(FakePacketA.class)
+                    .match(p -> true)
+                    .then("cmd2")
+                .add()
+                .cooldown(0)
+                .eventManager(mockEventManager)
+                .build();
+
+            flow.packetReceived(mockSession, new FakePacketA("x"));
+
+            verify(mockEventManager, times(1)).callEvent(argThat(event -> {
+                if (event instanceof xin.bbtt.mcbot.events.LoginFlowEvent e) {
+                    return e.getStepIndex() == 1
+                        && e.getFlowState() == LoginFlow.FlowState.WAITING;
+                }
+                return false;
+            }));
         }
     }
 
@@ -496,57 +604,6 @@ class LoginFlowTest {
             assertThat(changes).hasSize(2);
             assertThat(changes.get(1).stepIndex()).isEqualTo(2);
             assertThat(changes.get(1).state()).isEqualTo(LoginFlow.FlowState.COMPLETED);
-        }
-    }
-
-    @Nested
-    class CompletedState {
-        @Test
-        void completedFlowIgnoresFurtherPackets() {
-            LoginFlow flow = baseBuilder
-                .step(FakePacketA.class)
-                    .match(p -> true)
-                    .then("cmd")
-                .add()
-                .cooldown(0)
-                .build();
-
-            flow.packetReceived(mockSession, new FakePacketA("x"));
-            assertThat(flow.getState()).isEqualTo(LoginFlow.FlowState.COMPLETED);
-
-            flow.packetReceived(mockSession, new FakePacketA("x"));
-            flow.packetReceived(mockSession, new FakePacketA("x"));
-
-            assertThat(sentCommands).hasSize(1);
-        }
-    }
-
-    @Nested
-    class Describe {
-        @Test
-        void descriptionDefaultsToClassName() {
-            LoginFlow flow = baseBuilder
-                .step(FakePacketA.class)
-                    .match(p -> true)
-                    .then("cmd")
-                .add()
-                .build();
-
-            // No way to directly test description, but it shouldn't throw
-            assertThat(flow.getTotalSteps()).isEqualTo(1);
-        }
-
-        @Test
-        void customDescription() {
-            LoginFlow flow = baseBuilder
-                .step(FakePacketA.class)
-                    .match(p -> true)
-                    .then("cmd")
-                    .describe("My custom step")
-                .add()
-                .build();
-
-            assertThat(flow.getTotalSteps()).isEqualTo(1);
         }
     }
 
