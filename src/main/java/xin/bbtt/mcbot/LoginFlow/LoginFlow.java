@@ -111,9 +111,11 @@ public class LoginFlow extends SessionAdapter {
         checkStepTimeout();
         if (state == FlowState.FAILED) return;
 
-        long now = System.currentTimeMillis();
-        LoginFlowStep<?, ?> currentStep = steps.get(currentStepIndex);
+        processPacket(packet, System.currentTimeMillis());
+    }
 
+    private void processPacket(Packet packet, long now) {
+        LoginFlowStep<?, ?> currentStep = steps.get(currentStepIndex);
         boolean isTriggerPacket = currentStep.packetClass.isInstance(packet);
         boolean isSuccessPacket = currentStep.successPacketClass != null
                 && currentStep.successPacketClass.isInstance(packet);
@@ -121,17 +123,26 @@ public class LoginFlow extends SessionAdapter {
         if (!isTriggerPacket && !isSuccessPacket) return;
 
         if (currentStep.successPredicate == null) {
-            if (!isTriggerPacket || !currentStep.matches(packet)) return;
-            sendCommandIfReady(currentStep, now);
-            advanceStep(packet);
+            handleAutoAdvanceStep(currentStep, packet, isTriggerPacket, now);
             return;
         }
 
-        if (isTriggerPacket && currentStep.matches(packet)) {
-            sendCommandIfReady(currentStep, now);
-        }
+        handleConditionalStep(currentStep, packet, isTriggerPacket, isSuccessPacket, now);
+    }
 
-        if (isSuccessPacket && currentStep.isSuccess(packet)) {
+    private void handleAutoAdvanceStep(LoginFlowStep<?, ?> step, Packet packet,
+                                       boolean isTriggerPacket, long now) {
+        if (!isTriggerPacket || !step.matches(packet)) return;
+        sendCommandIfReady(step, now);
+        advanceStep(packet);
+    }
+
+    private void handleConditionalStep(LoginFlowStep<?, ?> step, Packet packet,
+                                       boolean isTriggerPacket, boolean isSuccessPacket, long now) {
+        if (isTriggerPacket && step.matches(packet)) {
+            sendCommandIfReady(step, now);
+        }
+        if (isSuccessPacket && step.isSuccess(packet)) {
             advanceStep(packet);
         }
     }
