@@ -207,6 +207,7 @@ public class Bot {
         session.removeListener(serverRecorder);
         session.removeListener(chatMessagePrinter);
         session.removeListener(messageSender);
+        session.removeListener(blockChangedAckRecorder);
         session.removeListener(serverMembersChangedMessagePrinter);
         session.removeListener(commandsRecorder);
         server = null;
