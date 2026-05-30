@@ -25,7 +25,8 @@ jobs:
           "xin.bbtt.mcbot.plugin.PluginManagerIntegrationTest",
           "xin.bbtt.mcbot.command.CommandIntegrationTest",
           "xin.bbtt.mcbot.util.TranslationIntegrationTest",
-          "xin.bbtt.mcbot.plugin.PluginFileLifecycleTest"
+          "xin.bbtt.mcbot.plugin.PluginFileLifecycleTest",
+          "xin.bbtt.mcbot.listeners.CommandsRecorderTest"
         ]
 
     steps:
