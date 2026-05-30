@@ -26,6 +26,7 @@ import xin.bbtt.mcbot.config.BotConfig;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,7 +37,7 @@ import java.nio.file.StandardCopyOption;
 public class Xinbot {
     private static final Logger log = LoggerFactory.getLogger(Xinbot.class.getSimpleName());
 
-    public static final String version = Xinbot.class.getPackage().getImplementationVersion();
+    public static final String version = Optional.ofNullable(Xinbot.class.getPackage().getImplementationVersion()).orElse("dev");
     public static final String license = """
             Copyright (C) 2024-2026 huangdihd
             This program is free software: you can redistribute it and/or modify
