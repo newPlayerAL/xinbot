@@ -106,7 +106,11 @@ public class Bot {
         running = true;
         protocol = AccountLoader.getProtocol();
         if (config.getConfigData().getProxy().isEnable()) {
-            proxyInfo = config.getConfigData().getProxy().getInfo().toMcProtocolLibProxyInfo();
+            if (config.getConfigData().getProxy().getInfo() == null) {
+                log.error(LangManager.get("xinbot.proxy.error.no_info"));
+            } else {
+                proxyInfo = config.getConfigData().getProxy().getInfo().toMcProtocolLibProxyInfo();
+            }
         }
         log.info(LangManager.get("xinbot.bot.starting", protocol.getProfile().getName()));
         
@@ -237,9 +241,12 @@ public class Bot {
         config.getConfigData().setAccount(AccountLoader.init(config.getConfigData().getAccount()));
         config.saveToFile();
 
-        if (config.getConfigData().getProxy().isEnable()) {
+        if (config.getConfigData().getProxy().isEnable() && config.getConfigData().getProxy().getInfo() != null) {
             proxyInfo = config.getConfigData().getProxy().getInfo().toMcProtocolLibProxyInfo();
         } else {
+            if (config.getConfigData().getProxy().isEnable()) {
+                log.error(LangManager.get("xinbot.proxy.error.no_info"));
+            }
             proxyInfo = null;
         }
 
