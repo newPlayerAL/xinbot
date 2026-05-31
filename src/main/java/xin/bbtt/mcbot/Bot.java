@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import xin.bbtt.mcbot.jLine.CLI;
 import xin.bbtt.mcbot.auth.AccountLoader;
 import xin.bbtt.mcbot.config.BotConfig;
+import xin.bbtt.mcbot.events.ConnectEvent;
 import xin.bbtt.mcbot.events.DisconnectEvent;
 import xin.bbtt.mcbot.listeners.*;
 import xin.bbtt.mcbot.plugin.Plugin;
@@ -175,6 +176,7 @@ public class Bot {
         session.addListener(commandsRecorder);
         pluginManager.enableAll();
         log.info(LangManager.get("xinbot.bot.connecting"));
+        getPluginManager().events().callEvent(new ConnectEvent());
         session.connect();
         long start_time = System.currentTimeMillis();
         while (server == null && running){
