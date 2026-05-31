@@ -499,13 +499,14 @@ public class PluginManager {
     }
 
     public void addListener(SessionListener sessionListener, Plugin plugin) {
-        sessionListeners.get(getPluginName(plugin)).add(sessionListener);
+        sessionListeners.computeIfAbsent(getPluginName(plugin), k -> new ArrayList<>()).add(sessionListener);
         var session = Bot.INSTANCE.getSession();
         if (session != null) session.addListener(sessionListener);
     }
 
     public void removeListener(SessionListener sessionListener, Plugin plugin) {
-        sessionListeners.get(getPluginName(plugin)).remove(sessionListener);
+        List<SessionListener> listeners = sessionListeners.get(getPluginName(plugin));
+        if (listeners != null) listeners.remove(sessionListener);
         var session = Bot.INSTANCE.getSession();
         if (session != null) session.removeListener(sessionListener);
     }
