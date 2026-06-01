@@ -139,3 +139,5 @@ xinbot.command.reload.invalid_extension=Le fichier de configuration doit se term
 xinbot.command.reload.success=Configuration rechargée avec succès depuis: %s
 xinbot.command.reload.failed=Échec du rechargement de la configuration depuis: %s
 xinbot.command.reload.disconnect=Rechargement de la configuration...
+
+xinbot.proxy.error.no_info=Le proxy est activé mais aucune information de proxy n'est configurée ; poursuite sans proxy.

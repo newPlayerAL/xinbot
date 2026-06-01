@@ -139,3 +139,5 @@ xinbot.command.reload.invalid_extension=設定ファイルは .conf で終わる
 xinbot.command.reload.success=%s から設定を正常に再読み込みしました
 xinbot.command.reload.failed=%s からの設定の再読み込みに失敗しました
 xinbot.command.reload.disconnect=設定を再読み込みしています...
+
+xinbot.proxy.error.no_info=プロキシは有効ですが、プロキシ情報が設定されていません。プロキシなしで続行します。
