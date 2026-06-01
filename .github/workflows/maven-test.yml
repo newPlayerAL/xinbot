@@ -26,7 +26,8 @@ jobs:
           "xin.bbtt.mcbot.command.CommandIntegrationTest",
           "xin.bbtt.mcbot.util.TranslationIntegrationTest",
           "xin.bbtt.mcbot.plugin.PluginFileLifecycleTest",
-          "xin.bbtt.mcbot.listeners.CommandsRecorderTest"
+          "xin.bbtt.mcbot.listeners.CommandsRecorderTest",
+          "xin.bbtt.mcbot.plugin.PluginClassloaderLeakTest"
         ]
 
     steps:

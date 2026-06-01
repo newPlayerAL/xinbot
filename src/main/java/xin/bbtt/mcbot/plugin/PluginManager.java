@@ -140,9 +140,17 @@ public class PluginManager {
         PluginClassLoader pluginClassLoader = new PluginClassLoader(new URL[]{url}, PluginManager.class.getClassLoader());
         pluginLoaders.put(info.name, pluginClassLoader);
         pluginDependencies.put(info.name, info.depends);
-        
-        Class<?> clazz = Class.forName(info.mainClass, true, pluginClassLoader);
-        Plugin plugin = (Plugin) clazz.getDeclaredConstructor().newInstance();
+
+        Plugin plugin;
+        try {
+            Class<?> clazz = Class.forName(info.mainClass, true, pluginClassLoader);
+            plugin = (Plugin) clazz.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            pluginLoaders.remove(info.name);
+            pluginDependencies.remove(info.name);
+            try { pluginClassLoader.close(); } catch (IOException ignored) {}
+            throw e;
+        }
         
         RegisteredPlugin rp;
         if (info.type == PluginType.META_PLUGIN && plugin instanceof MetaPlugin) {
@@ -216,9 +224,17 @@ public class PluginManager {
 
         pluginLoaders.put(info.name, pluginClassLoader);
         this.pluginDependencies.put(info.name, info.depends);
-        
-        Class<?> clazz = Class.forName(info.mainClass, true, pluginClassLoader);
-        Plugin plugin = (Plugin) clazz.getDeclaredConstructor().newInstance();
+
+        Plugin plugin;
+        try {
+            Class<?> clazz = Class.forName(info.mainClass, true, pluginClassLoader);
+            plugin = (Plugin) clazz.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            pluginLoaders.remove(info.name);
+            pluginDependencies.remove(info.name);
+            try { pluginClassLoader.close(); } catch (IOException ignored) {}
+            throw e;
+        }
         
         if (plugins.containsKey(info.name)) {
             pluginClassLoader.close();
