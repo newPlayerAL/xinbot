@@ -330,7 +330,8 @@ public class PluginManager {
     }
 
     public void enablePlugin(RegisteredPlugin rp) {
-        if (rp instanceof RegisteredMetaPlugin && Bot.INSTANCE.getSession() != null && Bot.INSTANCE.getSession().isConnected()) {
+        var session = Bot.INSTANCE.getSession();
+        if (rp instanceof RegisteredMetaPlugin && session != null && session.isConnected()) {
             log.error(LangManager.get("xinbot.metaplugin.error.enable_runtime"));
             return;
         }
@@ -356,7 +357,8 @@ public class PluginManager {
     }
 
     public void disablePlugin(RegisteredPlugin rp) {
-        if (rp instanceof RegisteredMetaPlugin && Bot.INSTANCE.getSession() != null && Bot.INSTANCE.getSession().isConnected()) {
+        var session = Bot.INSTANCE.getSession();
+        if (rp instanceof RegisteredMetaPlugin && session != null && session.isConnected()) {
             log.error(LangManager.get("xinbot.metaplugin.error.disable_runtime"));
             return;
         }
@@ -366,7 +368,6 @@ public class PluginManager {
         }
         eventManager.unregisterAll(rp.getPlugin());
         commandManager.unregisterAll(rp.getPlugin());
-        var session = Bot.INSTANCE.getSession();
         if (session != null) {
             for (SessionListener sessionListener : sessionListeners.getOrDefault(rp.getName(), Collections.emptyList())) {
                 session.removeListener(sessionListener);
@@ -501,13 +502,17 @@ public class PluginManager {
     public void addListener(SessionListener sessionListener, Plugin plugin) {
         sessionListeners.computeIfAbsent(getPluginName(plugin), k -> new ArrayList<>()).add(sessionListener);
         var session = Bot.INSTANCE.getSession();
-        if (session != null) session.addListener(sessionListener);
+        if (session != null) {
+            session.addListener(sessionListener);
+        }
     }
 
     public void removeListener(SessionListener sessionListener, Plugin plugin) {
         List<SessionListener> listeners = sessionListeners.get(getPluginName(plugin));
         if (listeners != null) listeners.remove(sessionListener);
         var session = Bot.INSTANCE.getSession();
-        if (session != null) session.removeListener(sessionListener);
+        if (session != null) {
+            session.removeListener(sessionListener);
+        }
     }
 }
