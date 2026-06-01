@@ -139,3 +139,5 @@ xinbot.command.reload.invalid_extension=Файл конфигурации дол
 xinbot.command.reload.success=Конфигурация успешно перезагружена из: %s
 xinbot.command.reload.failed=Не удалось перезагрузить конфигурацию из: %s
 xinbot.command.reload.disconnect=Перезагрузка конфигурации...
+
+xinbot.proxy.error.no_info=Прокси включён, но информация о прокси не настроена; продолжение без прокси.
