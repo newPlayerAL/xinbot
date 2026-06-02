@@ -74,7 +74,7 @@ public class Bot {
     @Getter
     @Setter
     private volatile Server server = null;
-    public final Map<UUID, GameProfile> players = new HashMap<>();
+    public final Map<UUID, GameProfile> players = new ConcurrentHashMap<>();
     private final PacketListener packetListener = new PacketListener();
     private final ServerRecorder serverRecorder = new ServerRecorder();
     private final ChatMessagePrinter chatMessagePrinter = new ChatMessagePrinter();
