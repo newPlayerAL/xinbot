@@ -54,7 +54,7 @@ public class Bot {
     @Getter
     private MinecraftProtocol protocol;
     @Getter
-    private ClientSession session;
+    private volatile ClientSession session;
     private Thread mainThread;
     @Getter
     private BotConfig config;
@@ -72,7 +72,7 @@ public class Bot {
     public static final Bot INSTANCE = new Bot();
     @Getter
     @Setter
-    private Server server = null;
+    private volatile Server server = null;
     public final Map<UUID, GameProfile> players = new HashMap<>();
     private final PacketListener packetListener = new PacketListener();
     private final ServerRecorder serverRecorder = new ServerRecorder();
