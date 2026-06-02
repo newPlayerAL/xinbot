@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import xin.bbtt.mcbot.jLine.CLI;
 import xin.bbtt.mcbot.auth.AccountLoader;
 import xin.bbtt.mcbot.config.BotConfig;
+import xin.bbtt.mcbot.events.ConnectEvent;
 import xin.bbtt.mcbot.events.DisconnectEvent;
 import xin.bbtt.mcbot.listeners.*;
 import xin.bbtt.mcbot.plugin.Plugin;
@@ -54,7 +55,7 @@ public class Bot {
     @Getter
     private MinecraftProtocol protocol;
     @Getter
-    private ClientSession session;
+    private volatile ClientSession session;
     private Thread mainThread;
     @Getter
     private BotConfig config;
@@ -72,7 +73,7 @@ public class Bot {
     public static final Bot INSTANCE = new Bot();
     @Getter
     @Setter
-    private Server server = null;
+    private volatile Server server = null;
     public final Map<UUID, GameProfile> players = new ConcurrentHashMap<>();
     private final PacketListener packetListener = new PacketListener();
     private final ServerRecorder serverRecorder = new ServerRecorder();
@@ -175,6 +176,7 @@ public class Bot {
         session.addListener(commandsRecorder);
         pluginManager.enableAll();
         log.info(LangManager.get("xinbot.bot.connecting"));
+        getPluginManager().events().callEvent(new ConnectEvent());
         session.connect();
         long start_time = System.currentTimeMillis();
         while (server == null && running){
